@@ -41,11 +41,21 @@ except FileNotFoundError:
     logged_in_users = {}
 
 # تحميل بيانات الطلاب
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
 def load_student_data():
-    df = pd.read_excel(STUDENT_DATA_FILE)
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name("bot-reader.json", scope)
+    client = gspread.authorize(creds)
+
+    sheet = client.open("StudentsDB").sheet1  # اسم الجدول
+    records = sheet.get_all_records()
+
     data = {}
-    for _, row in df.iterrows():
-        data[str(row['password'])] = {
+    for row in records:
+        password = str(row['password'])
+        data[password] = {
             "name": row['name'],
             "class": row['class'],
             "grades": {
@@ -57,8 +67,10 @@ def load_student_data():
             "schedule": row['schedule'],
             "attendance": row['attendance'],
             "duties": row['duties'],
-            "photo": row['photo']#
+            "photo": row['photo']
         }
+    return data
+
     return data
 
 # استرجاع بيانات الطالب
