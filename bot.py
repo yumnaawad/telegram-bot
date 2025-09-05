@@ -279,8 +279,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("تم إلغاء العملية.")
     return ConversationHandler.END
-# الحصول على البورت من البيئة أو تعيينه إلى 5000 في حال لم يكن موجود
-PORT = os.getenv("PORT", default=5000)
+
 # تشغيل البوت
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
