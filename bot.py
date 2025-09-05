@@ -177,25 +177,23 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
       except:
         await query.edit_message_text("⚠️ تعذر إرسال الصورة.")
     elif data == "worksheets":
-    # استعرض أسماء المواد من مجلد worksheets
-    base_path = "worksheets"
-    if not os.path.exists(base_path):
-        await query.edit_message_text("⚠️ مجلد أوراق العمل غير موجود.", reply_markup=reply_markup)
-        return
+        base_path = "worksheets"
+        if not os.path.exists(base_path):
+            await query.edit_message_text("⚠️ مجلد أوراق العمل غير موجود.", reply_markup=reply_markup)
+            return
+        subjects = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        if not subjects:
+            await query.edit_message_text("⚠️ لا توجد مواد في أوراق العمل.", reply_markup=reply_markup)
+            return
 
-    subjects = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
-    if not subjects:
-        await query.edit_message_text("⚠️ لا توجد مواد في أوراق العمل.", reply_markup=reply_markup)
-        return
+        keyboard = [[InlineKeyboardButton(subj, callback_data=f"worksheet_subject:{subj}")] for subj in subjects]
+        await query.edit_message_text("اختر المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    keyboard = [[InlineKeyboardButton(subj, callback_data=f"worksheet_subject:{subj}")] for subj in subjects]
-    await query.edit_message_text("اختر المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-elif data.startswith("worksheet_subject:"):
-    subject = data.split(":", 1)[1]
-    subject_path = os.path.join("worksheets", subject)
-    if not os.path.exists(subject_path):
-        await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
+    elif data.startswith("worksheet_subject:"):
+        subject = data.split(":", 1)[1]
+        subject_path = os.path.join("worksheets", subject)
+        if not os.path.exists(subject_path):
+            await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
         return
 
     files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
