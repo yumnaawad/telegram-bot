@@ -7,7 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1gaKKrn_PH5XKQGP3GpbY9TFSKsOB31pW
 """
 
-!pip install python-telegram-bot
 
 import json
 import pandas as pd
