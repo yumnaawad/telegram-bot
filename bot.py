@@ -279,7 +279,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("تم إلغاء العملية.")
     return ConversationHandler.END
-
+# الحصول على البورت من البيئة أو تعيينه إلى 5000 في حال لم يكن موجود
+PORT = os.getenv("PORT", default=5000)
 # تشغيل البوت
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -295,6 +296,6 @@ async def main():
     app.add_handler(CallbackQueryHandler(handle_button))
     #app.add_handler(CommandHandler("send_absence_alerts", send_absence_alerts))
 
-    await app.run_polling()
+    await app.run_polling(allowed_updates=Update.ALL_TYPES, listen='0.0.0.0', port=PORT)
 
 asyncio.run(main())
