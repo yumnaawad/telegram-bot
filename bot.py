@@ -296,6 +296,6 @@ async def main():
     app.add_handler(CallbackQueryHandler(handle_button))
     #app.add_handler(CommandHandler("send_absence_alerts", send_absence_alerts))
 
-    await app.run_polling(allowed_updates=Update.ALL_TYPES, listen='0.0.0.0', port=PORT)
+    await app.run_polling()
 
 asyncio.run(main())
