@@ -7,7 +7,8 @@ Original file is located at
     https://colab.research.google.com/drive/1gaKKrn_PH5XKQGP3GpbY9TFSKsOB31pW
 """
 
-
+import os
+from telegram import InputFile
 import json
 import pandas as pd
 
@@ -176,17 +177,56 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
       except:
         await query.edit_message_text("⚠️ تعذر إرسال الصورة.")
     elif data == "worksheets":
-        try:
-            pdf_path = "pdfs/worksheet.pdf"  # تأكد من وجود الملف في هذا المسار
-            with open(pdf_path, "rb") as pdf_file:
-                await query.message.reply_document(document=InputFile(pdf_file), caption="📄 هذه أوراق العمل الخاصة بك.")
-            # ممكن تعيد عرض القائمة بعد الإرسال لو حبيت:
-            await query.message.reply_text("اختر من القائمة:", reply_markup=reply_markup)
-        except Exception as e:
-            print("Error sending PDF:", e)
-            await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال ملف أوراق العمل.")
-    elif data == "grades":
-        # باقي الكود كما هو
+    # استعرض أسماء المواد من مجلد worksheets
+    base_path = "worksheets"
+    if not os.path.exists(base_path):
+        await query.edit_message_text("⚠️ مجلد أوراق العمل غير موجود.", reply_markup=reply_markup)
+        return
+
+    subjects = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+    if not subjects:
+        await query.edit_message_text("⚠️ لا توجد مواد في أوراق العمل.", reply_markup=reply_markup)
+        return
+
+    keyboard = [[InlineKeyboardButton(subj, callback_data=f"worksheet_subject:{subj}")] for subj in subjects]
+    await query.edit_message_text("اختر المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+elif data.startswith("worksheet_subject:"):
+    subject = data.split(":", 1)[1]
+    subject_path = os.path.join("worksheets", subject)
+    if not os.path.exists(subject_path):
+        await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
+        return
+
+    files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
+    if not files:
+        await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
+        return
+
+    keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
+    await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+elif data.startswith("worksheet_file:"):
+    # ارسال الملف المختار
+    parts = data.split(":", 2)
+    if len(parts) < 3:
+        await query.edit_message_text("⚠️ خطأ في اختيار الملف.", reply_markup=reply_markup)
+        return
+
+    subject = parts[1]
+    filename = parts[2]
+    file_path = os.path.join("worksheets", subject, filename)
+
+    if not os.path.exists(file_path):
+        await query.edit_message_text("⚠️ الملف غير موجود.", reply_markup=reply_markup)
+        return
+
+    try:
+        with open(file_path, "rb") as pdf_file:
+            await query.message.reply_document(document=InputFile(pdf_file), filename=filename)
+    except Exception as e:
+        print("Error sending file:", e)
+        await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال الملف.", reply_markup=reply_markup)
     elif data == "grades":
         keyboard = [
             [InlineKeyboardButton("📘 الامتحانات", callback_data="grades_exam")],
