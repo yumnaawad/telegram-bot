@@ -175,6 +175,18 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(f"{student['photo']}",reply_markup=reply_markup)
       except:
         await query.edit_message_text("⚠️ تعذر إرسال الصورة.")
+    elif data == "worksheets":
+        try:
+            pdf_path = "pdfs/worksheet.pdf"  # تأكد من وجود الملف في هذا المسار
+            with open(pdf_path, "rb") as pdf_file:
+                await query.message.reply_document(document=InputFile(pdf_file), caption="📄 هذه أوراق العمل الخاصة بك.")
+            # ممكن تعيد عرض القائمة بعد الإرسال لو حبيت:
+            await query.message.reply_text("اختر من القائمة:", reply_markup=reply_markup)
+        except Exception as e:
+            print("Error sending PDF:", e)
+            await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال ملف أوراق العمل.")
+    elif data == "grades":
+        # باقي الكود كما هو
     elif data == "grades":
         keyboard = [
             [InlineKeyboardButton("📘 الامتحانات", callback_data="grades_exam")],
