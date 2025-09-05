@@ -46,7 +46,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 def load_student_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("bot-reader.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("bot_reader.json", scope)
     client = gspread.authorize(creds)
 
     sheet = client.open("StudentsDB").sheet1  # اسم الجدول
