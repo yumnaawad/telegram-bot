@@ -194,11 +194,11 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         subject_path = os.path.join("worksheets", subject)
         if not os.path.exists(subject_path):
             await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
-        return
+            return
         files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
         if not files:
           await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
-        return
+          return
 
         keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
         await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
@@ -216,7 +216,12 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
       try:
         with open(file_path, "rb") as pdf_file:
-          await query.message.reply_document(document=InputFile(pdf_file), filename=filename)
+          await context.bot.send_document(
+              chat_id=query.message.chat_id,
+              document=InputFile(pdf_file),
+              filename=filename
+              )
+
       except Exception as e:
         print("Error sending file:", e)
         await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال الملف.", reply_markup=reply_markup)
