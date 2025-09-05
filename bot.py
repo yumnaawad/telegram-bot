@@ -195,34 +195,29 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not os.path.exists(subject_path):
             await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
         return
-
-    files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
-    if not files:
-        await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
+        files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
+        if not files:
+          await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
         return
 
-    keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
-    await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-elif data.startswith("worksheet_file:"):
-    # ارسال الملف المختار
-    parts = data.split(":", 2)
-    if len(parts) < 3:
+        keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
+        await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif data.startswith("worksheet_file:"):
+      parts = data.split(":", 2)
+      if len(parts) < 3:
         await query.edit_message_text("⚠️ خطأ في اختيار الملف.", reply_markup=reply_markup)
         return
+      subject = parts[1]
+      filename = parts[2]
+      file_path = os.path.join("worksheets", subject, filename)
 
-    subject = parts[1]
-    filename = parts[2]
-    file_path = os.path.join("worksheets", subject, filename)
-
-    if not os.path.exists(file_path):
+      if not os.path.exists(file_path):
         await query.edit_message_text("⚠️ الملف غير موجود.", reply_markup=reply_markup)
         return
-
-    try:
+      try:
         with open(file_path, "rb") as pdf_file:
-            await query.message.reply_document(document=InputFile(pdf_file), filename=filename)
-    except Exception as e:
+          await query.message.reply_document(document=InputFile(pdf_file), filename=filename)
+      except Exception as e:
         print("Error sending file:", e)
         await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال الملف.", reply_markup=reply_markup)
     elif data == "grades":
