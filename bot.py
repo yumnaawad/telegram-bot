@@ -12,7 +12,7 @@ from telegram.ext import (
 # -----------------------------
 # إعداد المتغيرات
 # -----------------------------
-TOKEN = os.getenv("BOT_TOKEN")  # يجب وضع التوكن في Environment Variables على Render
+TOKEN = os.getenv("BOT_TOKEN")  # ضع التوكن في Environment Variables على Render
 LOGIN = 1
 SESSIONS_FILE = "sessions.json"
 WORKSHEETS_PATH = "worksheets"
@@ -156,7 +156,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(f"✅ الملاحظات:\n{student['notes']}", reply_markup=main_keyboard())
 
     elif data == "announcements":
-        await query.edit_message_text(f"📢 الإعلانات:\n{student.get('announcements','')}", reply_markup=main_keyboard())
+        await query.edit_message.edit_message_text(f"📢 الإعلانات:\n{student.get('announcements','')}", reply_markup=main_keyboard())
 
     elif data == "photo":
         await query.edit_message_text(f"{student['photo']}", reply_markup=main_keyboard())
@@ -220,7 +220,8 @@ application.add_handler(CommandHandler("start", start))
 application.add_handler(login_conv)
 application.add_handler(CallbackQueryHandler(handle_button))
 
-@flask_app.route(f"/{TOKEN}", methods=["POST"])
+# Route Webhook ثابت
+@flask_app.route("/webhook", methods=["POST"])
 def webhook():
     update = Update.de_json(request.get_json(force=True), application.bot)
     application.update_queue.put_nowait(update)
@@ -232,5 +233,4 @@ def home():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    # تشغيل على Gunicorn في الإنتاج: gunicorn bot:flask_app
     flask_app.run(host="0.0.0.0", port=port)
