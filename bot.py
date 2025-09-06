@@ -6,13 +6,13 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, filters,
-    ContextTypes, ConversationHandler, CallbackQueryHandler
+    ConversationHandler, CallbackQueryHandler, ContextTypes
 )
 
 # -----------------------------
 # إعداد المتغيرات
 # -----------------------------
-TOKEN = os.getenv("BOT_TOKEN")  # ضع التوكن في Environment Variables
+TOKEN = os.getenv("BOT_TOKEN")  # يجب وضع التوكن في Environment Variables على Render
 LOGIN = 1
 SESSIONS_FILE = "sessions.json"
 WORKSHEETS_PATH = "worksheets"
@@ -109,7 +109,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # -----------------------------
 def main_keyboard():
     keyboard = [
-        [InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")],
+        [InlineKeyboardButton("حول المدرسة", callback_data="about")],
         [InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")],
         [InlineKeyboardButton("🗓️ الواجبات", callback_data="duties")],
         [InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")],
@@ -232,4 +232,5 @@ def home():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    # تشغيل على Gunicorn في الإنتاج: gunicorn bot:flask_app
     flask_app.run(host="0.0.0.0", port=port)
