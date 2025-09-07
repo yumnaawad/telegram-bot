@@ -14,6 +14,9 @@ import nest_asyncio
 import asyncio
 nest_asyncio.apply()
 
+from server import keep_alive
+
+keep_alive()  # يشغّل السيرفر
 
 
 TOKEN = "8115750679:AAF3bVGEGXRICAPPLlz2UXKsfH9xvEwIPjo"
