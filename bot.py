@@ -10,7 +10,7 @@ nest_asyncio.apply()
 from telegram import InputFile
 
 
-TOKEN = "AA3bVGEGXRICAPPL1z2UXKsfH9xvEwIPjo"
+TOKEN = "8115750679:AA3bVGEGXRICAPPL1z2UXKsfH9xvEwIPjo"
 LOGIN = 1
 SESSIONS_FILE = "sessions.json"
 
