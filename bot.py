@@ -1,8 +1,9 @@
-
 import os
 from telegram import InputFile
 import json
 import pandas as pd
+import time
+import threading
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
@@ -32,7 +33,6 @@ keyboard = [
         ]
 reply_markup = InlineKeyboardMarkup(keyboard)
 
-
 # تحميل جلسات الدخول
 try:
     with open(SESSIONS_FILE, "r") as f:
@@ -57,7 +57,7 @@ def load_student_data():
             "schedule": row['schedule'],
             "attendance": row['attendance'],
             "duties": row['duties'],
-            "photo": row['photo']#
+            "photo": row['photo']
         }
     return data
 
@@ -67,19 +67,20 @@ def get_student_by_chat_id(chat_id):
     user = logged_in_users.get(str(chat_id))
     if not user:
         return None
-    return students_db.get(user["password"])  # مفتاح مباشر من Excel
-    for student in students_db.values():
-        if student['name'] == user['name'] and student['class'] == user['class']:
-            return student
-    return None
+    return students_db.get(user["password"])
 
 # حفظ الجلسات
 def save_sessions():
     with open(SESSIONS_FILE, "w") as f:
         json.dump(logged_in_users, f)
 
+# الوظيفة التي ستعمل في الخلفية وتبقي البوت نشطًا
+def keep_alive():
+    while True:
+        print("البوت يعمل...")
+        time.sleep(60)  # الانتظار لمدة 60 ثانية
 
-# بدء البوت
+# البدء الفعلي للبوت
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_chat.id)
     if user_id in logged_in_users:
@@ -89,7 +90,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("⚠️ حدث خطأ أثناء جلب البيانات. أعد تسجيل الدخول.")
     else:
-        await update.message.reply_text("مرحباً! من فضلك سجل الدخول باستخدام /login")
+        await update.message.reply_text("مرحباً! سجل الدخول باستخدام /login")
 
 # تسجيل الدخول
 async def login(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -100,20 +101,16 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         password = update.message.text.strip()
         user_id = str(update.effective_chat.id)
-        print("📥 Password entered:", password)
 
         students_db = load_student_data()
-        print("✅ Loaded student DB")
 
         if password in students_db:
             logged_in_users[user_id] = {
-                "password": password  # أو أي معرف فريد موجود في ملف Excel
-                }
+                "password": password
+            }
 
             save_sessions()
-            print("✅ Logged in:", students_db[password])
             await update.message.reply_text("✅ تم تسجيل الدخول بنجاح!")
-
             await show_main_menu(update, context, students_db[password])
             return ConversationHandler.END
         else:
@@ -126,19 +123,12 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # القائمة الرئيسية
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, student):
-    print("✅ show_main_menu - student =", student)
+    message = f"مرحباً {student.get('name', 'بدون اسم')}! اختر من القائمة:"
+    if update.message:
+        await update.message.reply_text(message, reply_markup=reply_markup)
+    else:
+        await update.callback_query.edit_message_text(message, reply_markup=reply_markup)
 
-    try:
-
-        message = f"مرحباً {student.get('name', 'بدون اسم')}! اختر من القائمة:"
-        if update.message:
-            await update.message.reply_text(message, reply_markup=reply_markup)
-        else:
-            await update.callback_query.edit_message_text(message, reply_markup=reply_markup)
-    except Exception as e:
-        print("❌ خطأ أثناء عرض القائمة:", e)
-        if update.message:
-            await update.message.reply_text("⚠️ حدث خطأ أثناء عرض القائمة.")
 # التعامل مع الأزرار
 async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -152,10 +142,10 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data
     if data == "about":
-      await query.edit_message_text(f"مدرسة الأفق الجديد روضة - ابتدائي - إعدادي عنوان المدرسة : سهل الزبداني مفرق مضايا للتواصل: 0947180707",reply_markup=reply_markup)
-    elif data== "schedule":
-      await query.edit_message_text(f"✅ برنامج الدوام هور: {student['schedule']}",reply_markup=reply_markup)
-    elif data== "duties":
+      await query.edit_message_text(f"مدرسة الأفق الجديد روضة - ابتدائي - إعدادي عنوان المدرسة : سهل الزبداني مفرق مضايا للتواصل: 0947180707", reply_markup=reply_markup)
+    elif data == "schedule":
+      await query.edit_message_text(f"✅ برنامج الدوام هو: {student['schedule']}", reply_markup=reply_markup)
+     elif data== "duties":
       await query.edit_message_text(f"✅ واجباتك لليوم هي : {student['duties']}", reply_markup=reply_markup)
     elif data== "notes":
         await query.edit_message_text(f"✅ ملاحظات : {student['notes']}", reply_markup=reply_markup)
@@ -168,55 +158,6 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(f"{student['photo']}",reply_markup=reply_markup)
       except:
         await query.edit_message_text("⚠️ تعذر إرسال الصورة.")
-    elif data == "worksheets":
-        base_path = "worksheets"
-        if not os.path.exists(base_path):
-            await query.edit_message_text("⚠️ مجلد أوراق العمل غير موجود.", reply_markup=reply_markup)
-            return
-        subjects = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
-        if not subjects:
-            await query.edit_message_text("⚠️ لا توجد مواد في أوراق العمل.", reply_markup=reply_markup)
-            return
-
-        keyboard = [[InlineKeyboardButton(subj, callback_data=f"worksheet_subject:{subj}")] for subj in subjects]
-        await query.edit_message_text("اختر المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-    elif data.startswith("worksheet_subject:"):
-        subject = data.split(":", 1)[1]
-        subject_path = os.path.join("worksheets", subject)
-        if not os.path.exists(subject_path):
-            await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
-            return
-        files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
-        if not files:
-          await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
-          return
-
-        keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
-        await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
-    elif data.startswith("worksheet_file:"):
-      parts = data.split(":", 2)
-      if len(parts) < 3:
-        await query.edit_message_text("⚠️ خطأ في اختيار الملف.", reply_markup=reply_markup)
-        return
-      subject = parts[1]
-      filename = parts[2]
-      file_path = os.path.join("worksheets", subject, filename)
-
-      if not os.path.exists(file_path):
-        await query.edit_message_text("⚠️ الملف غير موجود.", reply_markup=reply_markup)
-        return
-      try:
-        with open(file_path, "rb") as pdf_file:
-          await context.bot.send_document(
-              chat_id=query.message.chat_id,
-              document=InputFile(pdf_file),
-              filename=filename
-              )
-
-      except Exception as e:
-        print("Error sending file:", e)
-        await query.edit_message_text("⚠️ حدث خطأ أثناء إرسال الملف.", reply_markup=reply_markup)
     elif data == "grades":
         keyboard = [
             [InlineKeyboardButton("📘 الامتحانات", callback_data="grades_exam")],
@@ -248,20 +189,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-
-
-
-            # بدء البوت
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = str(update.effective_chat.id)
-    if user_id in logged_in_users:
-        student = get_student_by_chat_id(update.effective_chat.id)
-        if student:
-            await show_main_menu(update, context, student)
-        else:
-            await update.message.reply_text("⚠️ حدث خطأ أثناء جلب البيانات. أعد تسجيل الدخول.")
-    else:
-        await update.message.reply_text("مرحباً! سجل الدخول باستخدام /login")
+    # إضافة باقي التعاملات مع الأزرار هنا
 
 # إلغاء
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -281,8 +209,13 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(login_conv)
     app.add_handler(CallbackQueryHandler(handle_button))
-    #app.add_handler(CommandHandler("send_absence_alerts", send_absence_alerts))
 
     await app.run_polling()
 
-asyncio.run(main())
+if __name__ == "__main__":
+    # بدء عملية keep_alive في خيط منفصل
+    keep_alive_thread = threading.Thread(target=keep_alive)
+    keep_alive_thread.start()
+
+    # بدء البوت
+    asyncio.run(main())
