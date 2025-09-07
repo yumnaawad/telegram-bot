@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler, CallbackQueryHandler
 import nest_asyncio
 import asyncio
-nest_asyncio.apply()
+#nest_asyncio.apply()
 from telegram import InputFile
 
 
