@@ -9,6 +9,7 @@ google-auth-oauthlib
 telegram
 nest_asyncio
 pygsheets
+pandas
 
 
 
