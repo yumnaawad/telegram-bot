@@ -147,7 +147,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
       await query.edit_message_text(f"مدرسة الأفق الجديد روضة - ابتدائي - إعدادي عنوان المدرسة : سهل الزبداني مفرق مضايا للتواصل: 0947180707", reply_markup=reply_markup)
     elif data == "schedule":
       await query.edit_message_text(f"✅ برنامج الدوام هو: {student['schedule']}", reply_markup=reply_markup)
-     elif data== "duties":
+    elif data== "duties":
       await query.edit_message_text(f"✅ واجباتك لليوم هي : {student['duties']}", reply_markup=reply_markup)
     elif data== "notes":
         await query.edit_message_text(f"✅ ملاحظات : {student['notes']}", reply_markup=reply_markup)
