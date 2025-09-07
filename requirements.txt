@@ -8,5 +8,7 @@ google-auth-httplib2
 google-auth-oauthlib
 telegram
 nest_asyncio
+pygsheets
+
 
 
