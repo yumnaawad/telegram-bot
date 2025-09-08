@@ -232,7 +232,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_document(
                     chat_id=query.message.chat_id,
                     document=InputFile(pdf_file),
-                    filename=filename , reply_markup=reply_markup
+                    filename=filename 
                 )
 
         except Exception as e:
