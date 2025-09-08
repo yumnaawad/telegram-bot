@@ -146,23 +146,18 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     data = query.data
-    if data == "about":
-      await query.edit_message_text(f"مدرسة الأفق الجديد روضة - ابتدائي - إعدادي عنوان المدرسة : سهل الزبداني مفرق مضايا للتواصل: 0947180707", reply_markup=reply_markup)
+   if data == "about":
+        await query.edit_message_text(f"مدرسة الأفق الجديد... للتواصل: 0947180707", reply_markup=reply_markup)
     elif data == "schedule":
-      await query.edit_message_text(f"✅ برنامج الدوام هو: {student['schedule']}", reply_markup=reply_markup)
-    elif data== "duties":
-      await query.edit_message_text(f"✅ واجباتك لليوم هي : {student['duties']}", reply_markup=reply_markup)
-    elif data== "notes":
-        await query.edit_message_text(f"✅ ملاحظات : {student['notes']}", reply_markup=reply_markup)
-    elif data== "status":
-        await query.edit_message_text(f"✅ نسبة الحضور: {student['status']}", reply_markup=reply_markup)
-    elif data== "announcements":
-        await query.edit_message_text(f"✅ نسبة الحضور: {student['announcements']}", reply_markup=reply_markup)
-    elif data == "photo":
-      try:
-        await query.edit_message_text(f"{student['photo']}",reply_markup=reply_markup)
-      except:
-        await query.edit_message_text("⚠️ تعذر إرسال الصورة.")
+        await query.edit_message_text(f"✅ برنامج الدوام: {student['schedule']}", reply_markup=reply_markup)
+    elif data == "duties":
+        await query.edit_message_text(f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
+    elif data == "notes": # Added handling for 'notes' button
+        await query.edit_message_text(f"✅ ملاحظات: {student['notes']}", reply_markup=reply_markup)
+    elif data == "attendance": # Added handling for 'attendance' button
+        await query.edit_message_text(f"✅ نسبة الحضور: {student['attendance']}", reply_markup=reply_markup)
+    elif data == "announcements":
+        await query.edit_message_text(f"📢 الإعلانات: {student['announcements']}", reply_markup=reply_markup) # Fixed KeyError
     elif data == "grades":
         keyboard = [
             [InlineKeyboardButton("📘 الامتحانات", callback_data="grades_exam")],
@@ -185,11 +180,63 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         grade = student['grades'].get(grade_type, {}).get(subject)
         if grade is not None:
             await query.edit_message_text(f"📌 علامتك في {subject} ({grade_type}): {grade}" , reply_markup=reply_markup)
-            #await query.edit_message_text(text=reply_text, reply_markup=main_markup)
         else:
-            await query.edit_message_text(f"❌ لا توجد علامة في {subject} ({grade_type})")
+            await query.edit_message_text(f"❌ لا توجد علامة في {subject} ({grade_type})", reply_markup=reply_markup)
+    elif data == "photo":
+        try:
+            await query.edit_message_text(f"{student['photo']}", reply_markup=reply_markup)
+        except Exception as e: # Catch specific exception if possible, otherwise a general one
+            print("Error sending photo:", e)
+            await query.edit_message_text("⚠️ تعذر إرسال الصورة.", reply_markup=reply_markup)
+    elif data == "worksheets":
+        base_path = "worksheets"
+        if not os.path.exists(base_path):
+            await query.edit_message_text("⚠️ مجلد أوراق العمل غير موجود.", reply_markup=reply_markup)
+            return
+        subjects = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        if not subjects:
+            await query.edit_message_text("⚠️ لا توجد مواد في أوراق العمل.", reply_markup=reply_markup)
+            return
 
+        keyboard = [[InlineKeyboardButton(subj, callback_data=f"worksheet_subject:{subj}")] for subj in subjects]
+        await query.edit_message_text("اختر المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
 
+    elif data.startswith("worksheet_subject:"):
+        subject = data.split(":", 1)[1]
+        subject_path = os.path.join("worksheets", subject)
+        if not os.path.exists(subject_path):
+            await query.edit_message_text(f"⚠️ لم أجد ملفات لمادة {subject}.", reply_markup=reply_markup)
+            return
+        files = [f for f in os.listdir(subject_path) if f.endswith(".pdf")]
+        if not files:
+            await query.edit_message_text(f"⚠️ لا توجد ملفات PDF لمادة {subject}.", reply_markup=reply_markup)
+            return
+
+        keyboard = [[InlineKeyboardButton(f, callback_data=f"worksheet_file:{subject}:{f}")] for f in files]
+        await query.edit_message_text(f"اختر ملف أوراق العمل للمادة {subject}:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif data.startswith("worksheet_file:"):
+        parts = data.split(":", 2)
+        if len(parts) < 3:
+            await query.edit_message_text("⚠️ خطأ في اختيار الملف.", reply_markup=reply_markup)
+            return
+        subject = parts[1]
+        filename = parts[2]
+        file_path = os.path.join("worksheets", subject, filename)
+
+        if not os.path.exists(file_path):
+            await query.edit_message_text("⚠️ الملف غير موجود.", reply_markup=reply_markup)
+            return
+        try:
+            with open(file_path, "rb") as pdf_file:
+                await context.bot.send_document(
+                    chat_id=query.message.chat_id,
+                    document=InputFile(pdf_file),
+                    filename=filename , reply_markup=reply_markup
+                )
+
+        except Exception as e:
+            print("Error sending file:", e)
+            await query.edit_message_text("⚠️ فشل إرسال الملف.", reply_markup=reply_markup)
 
 
 
