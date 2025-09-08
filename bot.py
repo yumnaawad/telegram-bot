@@ -146,7 +146,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     data = query.data
-   if data == "about":
+    if data == "about":
         await query.edit_message_text(f"مدرسة الأفق الجديد... للتواصل: 0947180707", reply_markup=reply_markup)
     elif data == "schedule":
         await query.edit_message_text(f"✅ برنامج الدوام: {student['schedule']}", reply_markup=reply_markup)
