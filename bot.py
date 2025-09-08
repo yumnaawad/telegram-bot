@@ -228,6 +228,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         try:
             with open(file_path, "rb") as pdf_file:
+                await query.edit_message_text("هذا هو الملف المطلوب", reply_markup=reply_markup)
                 await context.bot.send_document(
                     chat_id=query.message.chat_id,
                     document=InputFile(pdf_file),
