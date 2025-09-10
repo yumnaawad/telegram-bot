@@ -11,7 +11,8 @@ nest_asyncio
 pygsheets
 pandas
 openpyxl
-telebot
+
+
 
 
 
