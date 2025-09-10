@@ -57,11 +57,7 @@ keyboard.row(btn5, btn6)
 keyboard.row(btn7, btn8)
 reply_markup = keyboard
 
-bot.send_message(
-    message.chat.id,
-        "اختر من القائمة 👇",
-    reply_markup=keyboard
-# تحميل جلسات الدخول
+
 try:
     with open(SESSIONS_FILE, "r") as f:
         logged_in_users = json.load(f)
