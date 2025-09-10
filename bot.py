@@ -5,7 +5,7 @@ import pandas as pd
 import time
 import threading
 
-from telebot import types
+
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
@@ -27,36 +27,33 @@ LOGIN = 1
 STUDENT_DATA_FILE = "STUDENT_DATA_FILE.xlsx"
 SESSIONS_FILE = "sessions.json"
 
-#keyboard = [
- #           [InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")],
-  #          [InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")],
-   #         [InlineKeyboardButton("🗓️الواجبات", callback_data="duties")],
-    #        [InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")],
-     #       [InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")],
-      #      [InlineKeyboardButton("📊العلامات", callback_data="grades")],
-       #     [InlineKeyboardButton("📝 الملاحظات", callback_data="notes")],
-        #    [InlineKeyboardButton("📸 الصور", callback_data="photo")],
-        #]
-#reply_markup = InlineKeyboardMarkup(keyboard)
+keyboard = [
+            [InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")],
+            [InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")],
+            [InlineKeyboardButton("🗓️الواجبات", callback_data="duties")],
+            [InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")],
+            [InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")],
+            [InlineKeyboardButton("📊العلامات", callback_data="grades")],
+            [InlineKeyboardButton("📝 الملاحظات", callback_data="notes")],
+            [InlineKeyboardButton("📸 الصور", callback_data="photo")],
+        ]
+reply_markup = InlineKeyboardMarkup(keyboard)
 # إنشاء لوحة أزرار (InlineKeyboardMarkup)
-keyboard = types.InlineKeyboardMarkup(row_width=2)
+#keyboard = types.InlineKeyboardMarkup(row_width=2)
 
     # أزرار
-btn1 = types.InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")
-btn2 = types.InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")
-btn3 = types.InlineKeyboardButton("🗓️الواجبات", callback_data="duties")
-btn4 = types.InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")
-btn5 = types.InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")
-btn6 = types.InlineKeyboardButton("📊العلامات", callback_data="grades")
-btn7 = types.InlineKeyboardButton("📝 الملاحظات", callback_data="notes")
-btn8 = types.InlineKeyboardButton("📸 الصور", callback_data="photo")
+#btn1 = types.InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")
+#btn2 = types.InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")
+#btn3 = types.InlineKeyboardButton("🗓️الواجبات", callback_data="duties")
+#btn4 = types.InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")
+#btn5 = types.InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")
+#btn6 = types.InlineKeyboardButton("📊العلامات", callback_data="grades")
+#btn7 = types.InlineKeyboardButton("📝 الملاحظات", callback_data="notes")
+#btn8 = types.InlineKeyboardButton("📸 الصور", callback_data="photo")
 
     # إضافتهم للوحة (row_width=2 = صفين، كل صف فيه زرين)
 #keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
-keyboard.row(btn1, btn2)
-keyboard.row(btn3, btn4)
-keyboard.row(btn5, btn6)
-keyboard.row(btn7, btn8)
+
 reply_markup = keyboard
 
 
