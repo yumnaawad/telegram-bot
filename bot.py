@@ -5,8 +5,6 @@ import pandas as pd
 import time
 import threading
 
-
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -38,25 +36,8 @@ keyboard = [
             [InlineKeyboardButton("📸 الصور", callback_data="photo")],
         ]
 reply_markup = InlineKeyboardMarkup(keyboard)
-# إنشاء لوحة أزرار (InlineKeyboardMarkup)
-#keyboard = types.InlineKeyboardMarkup(row_width=2)
 
-    # أزرار
-#btn1 = types.InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")
-#btn2 = types.InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")
-#btn3 = types.InlineKeyboardButton("🗓️الواجبات", callback_data="duties")
-#btn4 = types.InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")
-#btn5 = types.InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")
-#btn6 = types.InlineKeyboardButton("📊العلامات", callback_data="grades")
-#btn7 = types.InlineKeyboardButton("📝 الملاحظات", callback_data="notes")
-#btn8 = types.InlineKeyboardButton("📸 الصور", callback_data="photo")
-
-    # إضافتهم للوحة (row_width=2 = صفين، كل صف فيه زرين)
-#keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
-
-reply_markup = keyboard
-
-
+# تحميل جلسات الدخول
 try:
     with open(SESSIONS_FILE, "r") as f:
         logged_in_users = json.load(f)
