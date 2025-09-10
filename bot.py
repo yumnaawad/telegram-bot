@@ -33,7 +33,6 @@ keyboard = [
             [InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")],
             [InlineKeyboardButton("📊العلامات", callback_data="grades")],
             [InlineKeyboardButton("📝 الملاحظات", callback_data="notes")],
-            [InlineKeyboardButton("✅ الدوام", callback_data="attendance")],
             [InlineKeyboardButton("📸 الصور", callback_data="photo")],
         ]
 reply_markup = InlineKeyboardMarkup(keyboard)
@@ -154,8 +153,6 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
     elif data == "notes": # Added handling for 'notes' button
         await query.edit_message_text(f"✅ ملاحظات: {student['notes']}", reply_markup=reply_markup)
-    elif data == "attendance": # Added handling for 'attendance' button
-        await query.edit_message_text(f"✅ نسبة الحضور: {student['attendance']}", reply_markup=reply_markup)
     elif data == "announcements":
         await query.edit_message_text(f"📢 الإعلانات: {student['announcements']}", reply_markup=reply_markup) # Fixed KeyError
     elif data == "grades":
