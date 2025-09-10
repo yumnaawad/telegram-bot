@@ -5,7 +5,7 @@ import pandas as pd
 import time
 import threading
 
-from telebot import TeleBot, types
+from telebot import types
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
