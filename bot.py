@@ -51,6 +51,7 @@ btn8 = types.InlineKeyboardButton("📸 الصور", callback_data="photo")
 
     # إضافتهم للوحة (row_width=2 = صفين، كل صف فيه زرين)
 keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
+reply_markup = InlineKeyboardMarkup(keyboard)
 
     bot.send_message(
         message.chat.id,
