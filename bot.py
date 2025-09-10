@@ -5,8 +5,6 @@ import pandas as pd
 import time
 import threading
 
-from datetime import datetime
-import csv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -26,7 +24,6 @@ LOGIN = 1
 
 STUDENT_DATA_FILE = "STUDENT_DATA_FILE.xlsx"
 SESSIONS_FILE = "sessions.json"
-
 
 keyboard = [
             [InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")],
