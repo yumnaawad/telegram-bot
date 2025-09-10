@@ -50,7 +50,11 @@ btn7 = types.InlineKeyboardButton("📝 الملاحظات", callback_data="note
 btn8 = types.InlineKeyboardButton("📸 الصور", callback_data="photo")
 
     # إضافتهم للوحة (row_width=2 = صفين، كل صف فيه زرين)
-keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
+#keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
+keyboard.row(btn1, btn2)
+keyboard.row(btn3, btn4)
+keyboard.row(btn5, btn6)
+keyboard.row(btn7, btn8)
 reply_markup = keyboard
 
     bot.send_message(
