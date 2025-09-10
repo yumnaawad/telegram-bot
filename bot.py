@@ -34,7 +34,7 @@ keyboard = [
             [InlineKeyboardButton("📊العلامات", callback_data="grades")],
             [InlineKeyboardButton("📝 الملاحظات", callback_data="notes")],
             [InlineKeyboardButton("✅ الدوام", callback_data="attendance")],
-            [InlineKeyboardButton("📸 الصوري", callback_data="photo")],
+            [InlineKeyboardButton("📸 الصور", callback_data="photo")],
         ]
 reply_markup = InlineKeyboardMarkup(keyboard)
 
