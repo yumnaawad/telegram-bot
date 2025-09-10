@@ -4,7 +4,7 @@ import json
 import pandas as pd
 import time
 import threading
-from telebot import TeleBot, types
+
 from datetime import datetime
 import csv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputFile
@@ -27,17 +27,6 @@ LOGIN = 1
 STUDENT_DATA_FILE = "STUDENT_DATA_FILE.xlsx"
 SESSIONS_FILE = "sessions.json"
 
-# دالة لتسجيل النشاط
-def log_activity(user, action):
-    with open("user_activity.csv", "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow([datetime.now(), user.id, user.username, action])
-
-# تسجيل أي رسالة
-@bot.message_handler(func=lambda m: True)
-def handle_message(message):
-    log_activity(message.from_user, f"كتب: {message.text}")
-    #bot.reply_to(message, "تم تسجيل نشاطك ✅")
 
 keyboard = [
             [InlineKeyboardButton("حول مدرسة الأفق الجديد", callback_data="about")],
