@@ -20,7 +20,7 @@ nest_asyncio.apply()
 from server import keep_alive
 keep_alive()  # يشغّل السيرفر على Repl.it أو غيره
 
-TOKEN = "PUT_YOUR_BOT_TOKEN"
+TOKEN = "8115750679:AAF3bVGEGXRICAPPLlz2UXKsfH9xvEwIPjo"
 LOGIN = 1
 
 STUDENT_DATA_FILE = "STUDENT_DATA_FILE.xlsx"
