@@ -30,7 +30,7 @@ keyboard = [
             [InlineKeyboardButton("🗓️ برنامج الدوام", callback_data="schedule")],
             [InlineKeyboardButton("🗓️الواجبات", callback_data="duties")],
             [InlineKeyboardButton("📄 أوراق العمل", callback_data="worksheets")],
-            [InlineKeyboardButton("📢 الإعلانات", callback_data="announcements")],
+            [InlineKeyboardButton("🚌 الباص", callback_data="announcements")],
             [InlineKeyboardButton("📊العلامات", callback_data="grades")],
             [InlineKeyboardButton("📝 الملاحظات", callback_data="notes")],
             [InlineKeyboardButton("📸 الصور", callback_data="photo")],
@@ -98,7 +98,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # تسجيل الدخول
 async def login(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("أرسل كلمة المرور الخاصة بك:")
+    await update.message.reply_text("من فضلك أدخل رقم هاتفك:")
     return LOGIN
 
 async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -114,7 +114,7 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
             }
 
             save_sessions()
-            await update.message.reply_text("✅ تم تسجيل الدخول بنجاح!")
+            await update.message.reply_text(" ✅ تم تسجيل الدخول بنجاح أهلاً وسهلاً بكم في البوت الخاص بمدرسة الأفق الجديد ")
             await show_main_menu(update, context, students_db[password])
             return ConversationHandler.END
         else:
@@ -127,7 +127,8 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # القائمة الرئيسية
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, student):
-    message = f"مرحباً {student.get('name', 'بدون اسم')}! اختر من القائمة:"
+    #message = f" {student.get('name', 'بدون اسم')}! اختر من القائمة ما : أهلأ وسهلاً "
+    message = f" ما الذي ترغبون بمعرفته اليوم؟ اختاروا من القائمة وسنوافيكم بالإجابة فوراً"
     if update.message:
         await update.message.reply_text(message, reply_markup=reply_markup)
     else:
