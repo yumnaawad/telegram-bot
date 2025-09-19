@@ -118,7 +118,7 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await show_main_menu(update, context, students_db[password])
             return ConversationHandler.END
         else:
-            await update.message.reply_text("❌ كلمة المرور غير صحيحة. حاول مرة أخرى.")
+            await update.message.reply_text("❌ رقم الهاتف غير صحيح..يرجى إدخال رقم الهاتف المسجل لدى المدرسة.. حاول مرة أخرى.")
             return LOGIN
     except Exception as e:
         print("❌ Exception in check_password:", e)
