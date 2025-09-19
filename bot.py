@@ -151,8 +151,8 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "schedule":
         await query.edit_message_text(f"✅ برنامج الدوام: {student['schedule']}", reply_markup=reply_markup)
     elif data == "duties":
-        await context.bot.send_message(chat_id=query.message.chat_id, text=f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
-        #await query.edit_message_text(f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
+        #await context.bot.send_message(chat_id=query.message.chat_id, text=f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
+        await query.edit_message_text(f"✅ واجباتك لليوم: {student['duties']}", reply_markup=reply_markup)
     elif data == "notes": # Added handling for 'notes' button
         await query.edit_message_text(f"✅ ملاحظات: {student['notes']}", reply_markup=reply_markup)
     elif data == "announcements":
